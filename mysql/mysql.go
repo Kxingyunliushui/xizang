@@ -8,7 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"time"
-	mayutil "xizang/myutil"
+	"xizang/myutil"
 
 	"sgygithup/goutils/file"
 	"strings"
@@ -80,8 +80,8 @@ func SelectDB(sql string) {
 		data_info.User_name = ""
 		data_info.Account = account
 		data_info.Userip = userip
-		data_info.Mac_address = mayutil.Utils_mac(mac)
-		data_info.Logintime = logintime
+		data_info.Mac_address = myutil.Utils_mac(mac)
+		data_info.Logintime = myutil.Util_time(logintime)
 		info, _ := json.Marshal(data_info)
 		file.Write(string(info)+"\n", filename)
 		//fmt.Println(user_name, ip);

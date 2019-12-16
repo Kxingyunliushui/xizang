@@ -1,4 +1,4 @@
-package mayutil
+package myutil
 
 import (
 	"strings"

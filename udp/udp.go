@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-var MapRWMutex *sync.RWMutex
+//var MapRWMutex *sync.RWMutex
 
 //var accountMap map[string]*radius_info
 var accountMap sync.Map
@@ -36,7 +36,8 @@ func udpProcess(conn *net.UDPConn) {
 	if err != nil {
 		fmt.Println("failed read udp msg, error: " + err.Error())
 	}
-	//fmt.Printf("data:[% x]\n", data)
+
+	fmt.Printf("data:[% x]\n", data)
 	reaDdata(data)
 	udpWrite(conn, remoteAddr)
 	<-limitChan
