@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"os/exec"
 	"sgygithup/goutils/datetime"
 	"sgygithup/goutils/file"
 	"strconv"
@@ -12,9 +13,12 @@ import (
 	"sync"
 	"time"
 )
+
 var MapRWMutex *sync.RWMutex
+
 //var accountMap map[string]*radius_info
 var accountMap sync.Map
+
 // 限制goroutine数量
 var limitChan = make(chan bool, 1000)
 
@@ -35,11 +39,11 @@ func udpProcess(conn *net.UDPConn) {
 	//fmt.Printf("data:[% x]\n", data)
 	reaDdata(data)
 	udpWrite(conn, remoteAddr)
-	<- limitChan
+	<-limitChan
 }
 
-func udpWrite(conn *net.UDPConn, addr *net.UDPAddr){
-	data := [] byte{0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00}
+func udpWrite(conn *net.UDPConn, addr *net.UDPAddr) {
+	data := []byte{0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00}
 	conn.WriteToUDP(data, addr)
 }
 
@@ -58,7 +62,7 @@ func ParseRtuDevid(input []byte) (output int64) {
 	return
 }
 
-func Timer(){
+func Timer() {
 	ticker := time.NewTicker(time.Second * 60 * 5) // 5 分钟
 	go func() {
 		for _ = range ticker.C {
@@ -68,8 +72,7 @@ func Timer(){
 	}()
 }
 
-
-func reaDdata(data []byte){
+func reaDdata(data []byte) {
 	data_info := &radius_info{}
 	account := strings.Split(string(data[32:64]), "@")[0]
 	account = strings.Split(account, "\u0000")[0]
@@ -79,18 +82,18 @@ func reaDdata(data []byte){
 	//data_info.User_name = string(data[64:96])
 	data_info.User_name = ""
 	timestamp := datetime.DateTotime(string(data[12:31]))
-	logtime := strconv.FormatInt(timestamp,10)
+	logtime := strconv.FormatInt(timestamp, 10)
 	data_info.Logintime = logtime
 	cmd := int(data[226])
 	if cmd == 1 || cmd == 3 { // 1 上线 3 在线
-	    accountMap.Store(account, data_info)
-	} else if cmd == 2 {    // 2 下线 暂不处理
-	    accountMap.Delete(account)
+		accountMap.Store(account, data_info)
+	} else if cmd == 2 { // 2 下线 暂不处理
+		accountMap.Delete(account)
 	}
 
-    fileName := "/home/dpiuser/radius/radius.json"
-	info, _ := json.Marshal(data_info)
-	file.Write(string(info)+"\n", fileName)
+	//fileName := "/home/dpiuser/radius/radius.json"
+	//info, _ := json.Marshal(data_info)
+	//file.Write(string(info)+"\n", fileName)
 	//fmt.Println("命令代码", ParseRtuDevid(data[:4]))
 	//fmt.Printf("命令代码:[% x]\n", data[:4])
 	//fmt.Println("子命令代码",ParseRtuDevid(data[4:8]))
@@ -145,10 +148,9 @@ func reaDdata(data []byte){
 	//info2, _ := json.Marshal(outstring)
 	//file.Write(string(info2)+"\n", fileName2)
 
-
 }
 
-func WriteJson(){
+func WriteJson() {
 	//uuid := "c75a938a-9e22-40b5-98d5-873fa58aa9ec_" //
 	uuid := "c082fc90-dbd3-40a1-bd81-109289986a0c_" //西藏民族大学
 	//route := "/home/radius/"
@@ -160,52 +162,51 @@ func WriteJson(){
 	fc := func(key, value interface{}) bool {
 		//fmt.Printf("Range: k, v = %v, %v\n", key, value)
 		info, _ := json.Marshal(value)
-		file.WriteData(string(info)+"\n",f)
+		file.WriteData(string(info)+"\n", f)
 		return true
 	}
 	accountMap.Range(fc)
-//注释上传
-//	url := "http://data.campus.yplsec.cn/dpilog/"
-//	param :=  make(map[string]string)
-//	param["data_type"] = "radius"
-//	param["version"] = "1.0"
-//	nameField := "file" // key 值
-//	fileName := name
-//	files, _ := os.Open(fileName)
-//	defer files.Close()
-//	data,err := file.UploadFile(url, param, nameField, fileName, files)
-//	if err != nil{
-//		fmt.Println("err",err)
-//	}
-//	fmt.Println("data",string(data),fileName)
-//	cmd := exec.Command("/bin/bash", "-c", "rm " + name)
-//	fmt.Println("cmd" , cmd)
-//	bytes,err := cmd.Output()
-//	if err != nil {
-//		fmt.Println("cmd rm err", err)
-//	}
-//	resp := string(bytes)
-//	fmt.Println("resp", resp)
+	//上传
+	url := "http://data.campus.yplsec.cn/dpilog/"
+	param := make(map[string]string)
+	param["data_type"] = "radius"
+	param["version"] = "1.0"
+	nameField := "file" // key 值
+	fileName := filename
+	files, _ := os.Open(fileName)
+	defer files.Close()
+	data, err := file.UploadFile(url, param, nameField, name, files)
+	if err != nil {
+		fmt.Println("err", err)
+	}
+	fmt.Println("data", string(data), name)
+	cmd := exec.Command("/bin/bash", "-c", "rm "+filename)
+	fmt.Println("cmd", cmd)
+	bytes, err := cmd.Output()
+	if err != nil {
+		fmt.Println("cmd rm err", err)
+	}
+	resp := string(bytes)
+	fmt.Println("resp", resp)
 }
 
-func Gettime()string{
+func Gettime() string {
 	t := time.Now().Unix()
 	tmt := time.Unix(t, 0).Format("20060102150405")
 	return tmt
 }
 
-func toIp(data []byte)(str string){
-	return fmt.Sprintf("%d.%d.%d.%d", int(data[0]),int(data[1]),int(data[2]),int(data[3]))
+func toIp(data []byte) (str string) {
+	return fmt.Sprintf("%d.%d.%d.%d", int(data[0]), int(data[1]), int(data[2]), int(data[3]))
 }
 
-
-func toMac(data []byte)(str string){
+func toMac(data []byte) (str string) {
 	str = ""
-	for _,value := range data{
+	for _, value := range data {
 		if value < 10 {
-			str += "0" + strconv.FormatInt(int64(value),16)
+			str += "0" + strconv.FormatInt(int64(value), 16)
 		} else {
-			str += strconv.FormatInt(int64(value),16)
+			str += strconv.FormatInt(int64(value), 16)
 		}
 	}
 	return strings.ToUpper(str)
@@ -225,9 +226,3 @@ func UdpServer(address string) {
 		go udpProcess(conn)
 	}
 }
-
-
-
-
-
-
