@@ -25,6 +25,14 @@ type sql_buf struct {
 	Logintime   string `json:"logintime, string"`
 }
 
+type sql_buf_hd struct {
+	User_Name   string `json:"user_name, string"`
+	Class       string `json:"class, string"`
+	Mobile      string `json:"mobile, string"`
+	Add_time    string `json:"add_time, string"`
+	Update_time string `json:"update_time, string"`
+}
+
 func Gettime() string {
 	t := time.Now().Unix()
 	tmt := time.Unix(t, 0).Format("20060102150405")
@@ -61,14 +69,42 @@ func InitDB(userName, password, port, ip, dbName string) {
 	fmt.Println("connnect success")
 }
 
+func SelectDB_hd(sql string) {
+	uuid := "c75a938a-9e22-40b5-98d5-873fa58aa9ec" //华东交通大学
+	var user_name, class, mobile, add_time, update_time string
+	data_info := &sql_buf_hd{}
+
+	rows, _ := DB.Query(sql)
+	//rows 查询 表里面所有的数据 结果应该是一个数组 方式db.Query
+
+	route := "./"
+	name := "radius_" + uuid + Gettime() + ".json"
+	filename := route + name
+	f := file.CreateFile(filename)
+
+	for rows.Next() {
+		rows.Scan(&user_name, &class, &mobile, &add_time, &update_time)
+		data_info.User_Name = user_name
+		data_info.Class = class
+		data_info.Mobile = mobile
+		data_info.Add_time = myutil.Util_strtotime(add_time)
+		data_info.Update_time = myutil.Util_strtotime(update_time)
+		info, _ := json.Marshal(data_info)
+		file.Write(string(info)+"\n", filename)
+		//fmt.Println(user_name, ip);
+	}
+	f.Close()
+
+}
+
 func SelectDB(sql string) {
 	rows, _ := DB.Query(sql)
 	//rows 查询 表里面所有的数据 结果应该是一个数组 方式db.Query
 	var account, userip, mac, logintime string
 	data_info := &sql_buf{}
 
-	//fileName := "/home/dpiuser/sqltest/user_ip.txt"
 	uuid := "0c2aad63-24ee-4d08-a8af-cf3d331e9849_" //西南石油大学
+	//fileName := "/home/dpiuser/sqltest/user_ip.txt"
 	//route := "/home/radius/"
 	route := "/home/dpiuser/radius/"
 	name := "radius_" + uuid + Gettime() + ".json"

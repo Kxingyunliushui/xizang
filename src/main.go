@@ -60,7 +60,7 @@
 
 //uuid := "c082fc90-dbd3-40a1-bd81-109289986a0c_" //西藏民族大学
 //uuid := "0c2aad63-24ee-4d08-a8af-cf3d331e9849_" //西南石油大学
-
+//西藏udp
 package main
 
 import (
