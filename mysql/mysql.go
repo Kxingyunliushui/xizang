@@ -26,6 +26,7 @@ type sql_buf struct {
 }
 
 type sql_buf_hd struct {
+	Account     string `json:"account, string"`
 	User_Name   string `json:"user_name, string"`
 	Class       string `json:"class, string"`
 	Mobile      string `json:"mobile, string"`
@@ -70,8 +71,8 @@ func InitDB(userName, password, port, ip, dbName string) {
 }
 
 func SelectDB_hd(sql string) {
-	uuid := "c75a938a-9e22-40b5-98d5-873fa58aa9ec" //华东交通大学
-	var user_name, class, mobile, add_time, update_time string
+	uuid := "c75a938a-9e22-40b5-98d5-873fa58aa9ec_" //华东交通大学
+	var account, user_name, class, mobile, add_time, update_time string
 	data_info := &sql_buf_hd{}
 
 	rows, _ := DB.Query(sql)
@@ -83,7 +84,8 @@ func SelectDB_hd(sql string) {
 	f := file.CreateFile(filename)
 
 	for rows.Next() {
-		rows.Scan(&user_name, &class, &mobile, &add_time, &update_time)
+		rows.Scan(&account, &user_name, &class, &mobile, &add_time, &update_time)
+		data_info.Account = account
 		data_info.User_Name = user_name
 		data_info.Class = class
 		data_info.Mobile = mobile

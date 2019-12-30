@@ -37,7 +37,7 @@ func udpProcess(conn *net.UDPConn) {
 		fmt.Println("failed read udp msg, error: " + err.Error())
 	}
 
-	fmt.Printf("data:[% x]\n", data)
+	//fmt.Printf("data:[% x]\n", data)
 	reaDdata(data)
 	udpWrite(conn, remoteAddr)
 	<-limitChan
