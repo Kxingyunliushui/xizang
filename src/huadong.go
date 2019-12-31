@@ -11,10 +11,11 @@ import (
 const (
 	userName = "root"
 	password = "Yplsec.com"
-	ip       = "127.0.0.1"
-	port     = "3336"
-	dbName   = "subject_identity"
-	table    = "user_data"
+	//ip       = "127.0.0.1"
+	ip     = "10.0.3.30"
+	port   = "3336"
+	dbName = "subject_identity"
+	table  = "user_data"
 )
 
 func GetMd5(src_str string) string {
