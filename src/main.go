@@ -60,6 +60,7 @@
 
 //uuid := "c082fc90-dbd3-40a1-bd81-109289986a0c_" //西藏民族大学
 //uuid := "0c2aad63-24ee-4d08-a8af-cf3d331e9849_" //西南石油大学
+//uuid := "a119f2de-16df-46b6-94f1-869742d30695_" //温州职业技术学院
 //西藏udp
 package main
 
@@ -70,9 +71,9 @@ import (
 func main() {
 	address := "0.0.0.0:61440"
 	//for {
-	//    fileName := "/home/yxy/go/src/xizang/src/radius.json"
-	//    info, _ := json.Marshal(address)
-	//    file.Write(string(info)+"\n", fileName)
+	//  fileName := "/home/yxy/go/src/xizang/src/radius.json"
+	//  info, _ := json.Marshal(address)
+	//  file.Write(string(info)+"\n", fileName)
 	//}
 
 	udp.UdpServer(address)

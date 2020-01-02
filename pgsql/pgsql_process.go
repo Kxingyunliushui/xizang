@@ -56,7 +56,7 @@ func SelectSrcMacName(srcmac string) []string {
 		if name != "" {
 			namemap[name] = 1
 		}
-		checkErr(err)
+		//checkErr(err)
 	}
 
 	for name, _ := range namemap {
