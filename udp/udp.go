@@ -2,6 +2,7 @@ package udp
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"net"
 	"os"
@@ -24,6 +25,7 @@ var limitChan = make(chan bool, 1000)
 
 func init() {
 	//accountMap = make(map[string]*radius_info)
+	flaginit_udp(&Uuid)
 	Timer()
 }
 
@@ -71,6 +73,16 @@ func Timer() {
 		}
 
 	}()
+}
+
+func flaginit_udp(did *string) {
+	//命令行是：test.exe -u root -p root123 -h localhost -port 8080
+	//var path, filename string
+	flag.StringVar(did, "did", "", "did")
+
+	flag.Parse() //解析注册的flag，必须
+
+	return
 }
 
 func reaDdata(data []byte) {
@@ -151,13 +163,17 @@ func reaDdata(data []byte) {
 
 }
 
+var Uuid string = ""
+
+//uuid := "a119f2de-16df-46b6-94f1-869742d30695_" //温州职业技术学
+//uuid := "c75a938a-9e22-40b5-98d5-873fa58aa9ec_" //
+//uuid := "c082fc90-dbd3-40a1-bd81-109289986a0c_" //西藏民族大学
+
 func WriteJson() {
-	//uuid := "c75a938a-9e22-40b5-98d5-873fa58aa9ec_" //
-	//uuid := "c082fc90-dbd3-40a1-bd81-109289986a0c_" //西藏民族大学
-	uuid := "a119f2de-16df-46b6-94f1-869742d30695_" //温州职业技术学院
+
 	//route := "/home/radius/"
 	route := "/home/dpiuser/radius/"
-	name := "radius_" + uuid + Gettime() + ".json"
+	name := "radius_" + Uuid + "_" + Gettime() + ".json"
 	filename := route + name
 	f := file.CreateFile(filename)
 	defer f.Close()
